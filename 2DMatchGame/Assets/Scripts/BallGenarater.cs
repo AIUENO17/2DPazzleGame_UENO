@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-    public enum BallGenarater // ゲーム内にて利用するピースの種類
+public enum BallGenarater // ゲーム内にて利用するボールの種類
 {
-        FireBall = 0,    // ファイヤーボール
-        WaterBall,       // ウォーターボール
-        WindBall,      // ウィンドボール
-        LightBall,     // ライトボール
-        DarkBall,      // ダークボール
-        PinkBall,    // ピンクボール
-    }
+
+    FireBall = 0,    // ファイヤーボール
+    WaterBall,       // ウォーターボール
+    WindBall,      // ウィンドボール
+    LightBall,     // ライトボール
+    DarkBall,      // ダークボール
+    PinkBall,    // ピンクボール
+
+}
+
+

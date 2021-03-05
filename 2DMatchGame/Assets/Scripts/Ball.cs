@@ -5,10 +5,11 @@ using UnityEngine.UI;
 public class Ball : MonoBehaviour
 {
     public bool deleteFlag;
-
     
     private Image thisImage;
+    
     private RectTransform thisRectTransform;
+    
     private BallGenarater kind;
 
     

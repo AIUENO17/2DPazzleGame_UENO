@@ -6,6 +6,7 @@ public class Gem : MonoBehaviour
 {
 
 	public GameObject sphere; //子オブジェクトのSphereオブジェクト
+	
 	public string ballName = ""; //Material検索用
 								 //検索対象のMaterial名
 

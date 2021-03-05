@@ -12,9 +12,13 @@ public class BoardManager : MonoBehaviour
 
    
     private Ball[,] board;
+
     private int width;
+
     private int height;
+
     private int pieceWidth;
+
     private int randomSeed;
 
     
@@ -22,6 +26,7 @@ public class BoardManager : MonoBehaviour
     public void InitializeBoard(int boardWidth, int boardHeight)
     {
         width = boardWidth;
+
         height = boardHeight;
 
         pieceWidth = Screen.width / boardWidth;
@@ -41,6 +46,7 @@ public class BoardManager : MonoBehaviour
     public Ball GetNearestPiece(Vector3 input)
     {
         var minDist = float.MaxValue;
+
         Ball nearestPiece = null;
 
         // 入力値と盤面のピース位置との距離を計算し、一番距離が短いピースを探す
@@ -164,6 +170,7 @@ public class BoardManager : MonoBehaviour
     {
         // ピースの情報を取得
         var pos = GetPieceBoardPos(piece);
+
         var kind = piece.GetKind();
 
         // 縦方向にマッチするかの判定 MEMO: 自分自身をカウントするため +1 する

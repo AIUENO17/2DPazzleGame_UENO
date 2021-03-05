@@ -22,10 +22,12 @@ public class GameManager : MonoBehaviour
 
     
     [SerializeField]　private BoardManager board;
+
     [SerializeField]　private Text StateText;
 
     
     private GameState currentState;
+
     private Ball selectedPiece;
 
     
