@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
             default:
                 break;
         }
-        StateText.text = currentState.ToString();
+        
     }
 
     
