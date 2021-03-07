@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
         MatchCheck,
         DeletePiece,
         FillPiece,
+        Wait,
     }
 
     
@@ -111,14 +112,17 @@ public class GameManager : MonoBehaviour
     // マッチングしているピースを削除する
     private void DeletePiece()
     {
-        board.DeleteMatchPiece();
-        currentState = GameState.FillPiece;
+        currentState = GameState.Wait;
+        StartCoroutine(board.DeleteMatchPiece(() => currentState = GameState.FillPiece));
+
+        
     }
+    
 
     // 盤面上のかけている部分にピースを補充する
     private void FillPiece()
     {
-        board.FillPiece();
-        currentState = GameState.MatchCheck;
+        currentState = GameState.Wait;
+        StartCoroutine(board.FillPiece(() => currentState = GameState.MatchCheck));
     }
 }

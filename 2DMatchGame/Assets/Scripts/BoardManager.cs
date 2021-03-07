@@ -2,15 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 // 盤面クラス
 public class BoardManager : MonoBehaviour
 {
 
-    
+
     [SerializeField] private GameObject PiecePrefab;
 
-   
+
     private Ball[,] board;
 
     private int width;
@@ -21,7 +23,9 @@ public class BoardManager : MonoBehaviour
 
     private int randomSeed;
 
-    
+
+
+
     // 特定の幅と高さに盤面を初期化する
     public void InitializeBoard(int boardWidth, int boardHeight)
     {
@@ -92,15 +96,16 @@ public class BoardManager : MonoBehaviour
     }
 
     // マッチングしているピースを削除する
-    public void DeleteMatchPiece()
+
+
+    //返値にIEnumatorを指定引数にAction
+    public IEnumerator DeleteMatchPiece(Action endCallBadk)
     {
         // マッチしているピースの削除フラグを立てる
         foreach (var piece in board)
         {
             piece.deleteFlag = IsMatchPiece(piece);
         }
-
-        // 削除フラグが立っているオブジェクトを削除する
         foreach (var piece in board)
         {
             if (piece != null && piece.deleteFlag)
@@ -108,10 +113,20 @@ public class BoardManager : MonoBehaviour
                 Destroy(piece.gameObject);
             }
         }
+        yield return new WaitForSeconds(1f);
+        endCallBadk();
     }
 
+
+
+
+
+
+
+
+
     // ピースが消えている場所を詰めて、新しいピースを生成する
-    public void FillPiece()
+    public IEnumerator FillPiece(Action endCallback)
     {
         for (int i = 0; i < width; i++)
         {
@@ -120,9 +135,12 @@ public class BoardManager : MonoBehaviour
                 FillPiece(new Vector2(i, j));
             }
         }
+        yield return new WaitForSeconds(1f);
+        endCallback();
+
     }
 
-    
+
     // 特定の位置にピースを作成する
     private void CreatePiece(Vector2 position)
     {
