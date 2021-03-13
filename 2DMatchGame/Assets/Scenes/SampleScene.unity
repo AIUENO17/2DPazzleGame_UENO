@@ -331,7 +331,7 @@ GameObject:
   - component: {fileID: 722699105}
   - component: {fileID: 722699106}
   m_Layer: 0
-  m_Name: PAD
+  m_Name: PADImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -413,7 +413,7 @@ GameObject:
   - component: {fileID: 1141344004}
   - component: {fileID: 1141344003}
   m_Layer: 5
-  m_Name: Image
+  m_Name: EnemyImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
