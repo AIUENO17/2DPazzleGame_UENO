@@ -171,6 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PiecePrefab: {fileID: 3208136937998535247, guid: 353988e8db379b64bbd5706ee2bccc35,
     type: 3}
+  animManager: {fileID: 0}
 --- !u!1 &135040566
 GameObject:
   m_ObjectHideFlags: 0
