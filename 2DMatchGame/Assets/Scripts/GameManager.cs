@@ -114,10 +114,7 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.Wait;
         StartCoroutine(board.DeleteMatchPiece(() => currentState = GameState.FillPiece));
-
-        
     }
-    
 
     // 盤面上のかけている部分にピースを補充する
     private void FillPiece()
@@ -125,4 +122,4 @@ public class GameManager : MonoBehaviour
         currentState = GameState.Wait;
         StartCoroutine(board.FillPiece(() => currentState = GameState.MatchCheck));
     }
-}
+    }

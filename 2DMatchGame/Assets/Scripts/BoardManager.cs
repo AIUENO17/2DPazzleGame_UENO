@@ -2,18 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 // 盤面クラス
 public class BoardManager : MonoBehaviour
 {    //privateの時はconst 定数
-    private const float FillPieceDuration = 0.2f;
-    private const float SwitchPieceCuration = 0.02f;
+
 
     [SerializeField] private GameObject PiecePrefab;
 
-    [SerializeField] private TweenAnimationManager animManager;
+
 
     private Ball[,] board;
 
@@ -25,9 +23,7 @@ public class BoardManager : MonoBehaviour
 
     private int randomSeed;
     //Vecter2はx.yの位置を表すベクトル
-    private Vector2[] directions = new Vector2[] { Vector2.up, Vector2.down, Vector2.right, Vector2.left };
-    private List<AnimData> fillPieceAnim = new List<AnimData>();
-    private List<Vector2> pieceCreatePos = new List<Vector2>();
+
 
     // 特定の幅と高さに盤面を初期化する
     public void InitializeBoard(int boardWidth, int boardHeight)
@@ -47,26 +43,33 @@ public class BoardManager : MonoBehaviour
                 CreatePiece(new Vector2(i, j));
             }
         }
-        animManager.AddListAnimData(fillPieceAnim);
+
     }
 
     // 入力されたクリック(タップ)位置から最も近いピースの位置を返す
     public Ball GetNearestPiece(Vector3 input)
     {
-        var x = Mathf.Min((int)(input.x / pieceWidth), width - 1);
-        var y = Mathf.Min((int)(input.y / pieceWidth), height - 1);
-        return board[x, y];
+        var minDist = float.MaxValue;
+        Ball nearestPiece = null;
+        foreach (var p in board)
+        {
+            var dist = Vector3.Distance(input, p.transform.position);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                nearestPiece = p;
+            }
+        }
+        return nearestPiece;
     }
-        
+
     // 盤面上のピースを交換する
     public void SwitchPiece(Ball p1, Ball p2)
     {
         // 位置を移動する
-        var animList = new List<AnimData>();
-        animList.Add(new AnimData(p1.gameObject, GetPieceWorldPos(GetPieceBoardPos(p2)), SwitchPieceCuration));
-        animList.Add(new AnimData(p2.gameObject, GetPieceWorldPos(GetPieceBoardPos(p1)), SwitchPieceCuration));
-        animManager.AddListAnimData(animList);
-
+        var p1Position = p1.transform.position;
+        p1.transform.position = p2.transform.position;
+        p2.transform.position = p1Position;
         // 盤面データを更新する
         var p1BoardPos = GetPieceBoardPos(p1);
         var p2BoardPos = GetPieceBoardPos(p2);
@@ -96,18 +99,19 @@ public class BoardManager : MonoBehaviour
         // マッチしているピースの削除フラグを立てる
         foreach (var piece in board)
         {
-           
-        
-            if (piece != null && IsMatchPiece(piece))
+
+            piece.deleteFlag = IsMatchPiece(piece);
+        }
+        foreach (var piece in board)
+        { 
+            if (piece != null && piece.deleteFlag)
             {
-                var pos = GetPieceBoardPos(piece);
-                DestroyMatchPiece(pos, piece.GetKind());
-                yield return new WaitForSeconds(0.5f);
+                Destroy(piece.gameObject);
             }
         }
-
-        
+        yield return new WaitForSeconds(1f);
         endCallBadk();
+
     }
 
 
@@ -118,8 +122,12 @@ public class BoardManager : MonoBehaviour
 
 
 
+
+
+    //
+
     // ピースが消えている場所を詰めて、新しいピースを生成する
-    public IEnumerator FillPiece(Action endCallback)
+    public IEnumerator FillPiece(Action endCallBack)
     {
         for (int i = 0; i < width; i++)
         {
@@ -128,31 +136,26 @@ public class BoardManager : MonoBehaviour
                 FillPiece(new Vector2(i, j));
             }
         }
-        animManager.AddListAnimData(fillPieceAnim);
+
         yield return new WaitForSeconds(1f);
-        endCallback();
+        endCallBack();
 
     }
-
+    //
 
     // 特定の位置にピースを作成する
     private void CreatePiece(Vector2 position)
     {
-        var piecePos = GetPieceWorldPos(position);
+        var createPos = GetPieceWorldPos(position);
         // ピースの生成位置を求める
-        var createPos = new Vector2(position.x, height);
-        while (pieceCreatePos.Contains(createPos))
-        {
-            createPos += Vector2.up;
-        }
-        pieceCreatePos.Add(createPos);
-        var pieceCreateworldPos = GetPieceWorldPos(createPos);
+
+
 
         // 生成するピースの種類をランダムに決める
         var kind = (BallGenarater)UnityEngine.Random.Range(0, Enum.GetNames(typeof(BallGenarater)).Length);
 
         // ピースを生成、ボードの子オブジェクトにする
-        var piece = Instantiate(PiecePrefab, pieceCreateworldPos, Quaternion.identity).GetComponent<Ball>();
+        var piece = Instantiate(PiecePrefab, createPos, Quaternion.identity).GetComponent<Ball>();
         piece.transform.SetParent(transform);
         piece.SetSize(pieceWidth);
         piece.SetKind(kind);
@@ -160,7 +163,7 @@ public class BoardManager : MonoBehaviour
         // 盤面にピースの情報をセットする
         board[(int)position.x, (int)position.y] = piece;
 
-        fillPieceAnim.Add(new AnimData(piece.gameObject, piecePos, FillPieceDuration));
+
     }
 
     // 盤面上の位置からピースオブジェクトのワールド座標での位置を返す
@@ -245,7 +248,7 @@ public class BoardManager : MonoBehaviour
             var checkPiece = board[(int)checkPos.x, (int)checkPos.y];
             if (checkPiece != null && !checkPiece.deleteFlag)
             {
-                fillPieceAnim.Add(new AnimData(checkPiece.gameObject, GetPieceWorldPos(pos), FillPieceDuration));
+                checkPiece.transform.position = GetPieceWorldPos(pos);
                 board[(int)pos.x, (int)pos.y] = checkPiece;
                 board[(int)checkPos.x, (int)checkPos.y] = null;
                 return;
@@ -256,28 +259,6 @@ public class BoardManager : MonoBehaviour
         // 有効なピースがなければ新しく作る
         CreatePiece(pos);
     }
-
-    private void DestroyMatchPiece(Vector2 pos, BallGenarater kind)
-    {
-        if (!IsInBoard(pos))
-        {
-            return;
-        }
-        var piece = board[(int)pos.x, (int)pos.y];
-        if (piece == null || piece.deleteFlag || piece.GetKind() != kind)
-        {
-            return;
-        }
-        if (!IsMatchPiece(piece))
-        {
-            return;
-        }
-        piece.deleteFlag = true;
-        foreach (var dir in directions)
-        {
-            DestroyMatchPiece(pos + dir, kind);
-        }
-
-        Destroy(piece.gameObject);
-    }
 }
+
+  
